@@ -2,8 +2,8 @@
   <v-app>
     <v-app-bar app>
       <v-toolbar-title class="headline text-uppercase">
-        <span>Ileana</span>
-        <span class="font-weight-light">You have visitied this many times</span>
+        <span>Hello</span>
+        <span class="font-weight-light">Welcome to the Harvard Art Museum Browser</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn v-on:click="getSearch">
@@ -11,6 +11,9 @@
       </v-btn>
       <v-btn v-on:click="getGalleries">
         <span class="mr-2">Galleries</span>
+      </v-btn>
+      <v-btn v-on:click="displayToDos">
+        <span class="mr-2">ToDos!</span>
       </v-btn>
     </v-app-bar>
 
@@ -29,6 +32,9 @@
     <v-content v-else-if="objectJson">
       <Object v-bind:objnumber="objectJson"/>
     </v-content>
+    <v-content v-else-if="toDos">
+      <ToDos/>
+    </v-content>
   </v-app>
 </template>
 
@@ -37,6 +43,7 @@ import Galleries from './components/Galleries';
 import HelloWorld from './components/HelloWorld';
 import Objects from './components/Objects';
 import Object from './components/Object';
+import ToDos from './components/ToDo';
 
 export default {
   name: 'App',
@@ -44,7 +51,11 @@ export default {
     Galleries,
     HelloWorld,
     Objects,
-    Object
+    Object,
+    ToDos
+  },
+  props: {
+    numberVisits: Number
   },
   methods: {
     getGalleries(){
@@ -74,6 +85,14 @@ export default {
       this.welcomePage = false,
       this.selectOption = null,
       this.objectJson = objJson
+    },
+    displayToDos(){
+      this.showGalleries = false,
+      this.showSearch = false,
+      this.welcomePage = false,
+      this.selectOption = null,
+      this.objectJson = null,
+      this.toDos = true
     }
   },
   data (){ return {
@@ -82,6 +101,7 @@ export default {
     welcomePage: true,
     selectOption: null,
     objectJson: null,
+    toDos: false
   }},
 };
 </script>

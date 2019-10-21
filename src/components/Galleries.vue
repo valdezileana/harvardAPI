@@ -106,3 +106,9 @@ export default {
   }),
 };
 </script>
+
+<style scoped>
+.form-control {
+    border: 8;
+}
+</style>

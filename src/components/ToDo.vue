@@ -51,9 +51,6 @@ export default {
       this.todos.push({ text: this.newTodo, completed: false });
       this.newTodo = '';
     },
-    fetchSearchResults(objectNum){
-          this.$emit("selected", objectNum)
-    },
   },
   mounted() {
     if (localStorage.getItem('todos')) this.todos = JSON.parse(localStorage.getItem('todos'));
@@ -69,4 +66,3 @@ export default {
 };
 
 </script>
-
