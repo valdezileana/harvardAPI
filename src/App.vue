@@ -24,7 +24,7 @@
       <HelloWorld/>
     </v-content>
     <v-content v-else-if="selectOption">
-      <Objects v-bind:selectName="selectOption" v-on:selected="displayObject"/>
+      <Objects v-bind:selectName="selectOption" v-bind:pageNumber="1" v-on:selected="displayObject"/>
     </v-content>
     <v-content v-else-if="objectJson">
       <Object v-bind:objnumber="objectJson"/>

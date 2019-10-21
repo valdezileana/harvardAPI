@@ -24,6 +24,17 @@
         xs12
       >
         <h2 class="headline font-weight-bold mb-3">Please Select an Object to Continue: </h2>
+        <p class="subheading font-weight-regular">
+          This class fetches 100 results at a time, if there are more than 100 results, a next page button will appear below!
+        </p>
+        <p class="subheading font-weight-regular">
+          If there are no results, this page will remain empty! Try Again :D
+        </p>
+        <v-layout justify-center v-if="next">
+      <div class="my-2">
+              <v-btn x-large color="success" dark v-on:click="getAllGalleries">Next Page</v-btn>
+        </div>
+      </v-layout>
         <!-- Inspo for this: https://codepen.io/pen/?&editable=true&editors=101 -->
         <v-layout justify-center>
         <v-item-group>
@@ -80,14 +91,24 @@ export default {
       this.getAllGalleries();
   },
 props: {
-    selectName: Number
+    selectName: Number,
+    pageNumber: String,
 },
   methods: {
       async getAllGalleries(){
-          let link = 'https://api.harvardartmuseums.org/object?apikey=3a942490-d002-11e9-9498-734205a7ab16&size=100&gallery=' + this.$props.selectName;
+          let link = 'https://api.harvardartmuseums.org/object?apikey=3a942490-d002-11e9-9498-734205a7ab16&size=100&gallery=' + this.$props.selectName
+          + "&page=" + this.$props.pageNumber;
           let gal = await fetch(link);
           let json = await gal.json();
           let data = json.records;
+          if(json.info && json.info.next){
+              this.next = true;
+              this.$props.pageNumber = Number(this.$props.pageNumber) + 1;
+          }
+          else{
+              this.next = false;
+          }
+          this.galleries = [];
           for(let i in data)
           {
               let pair = {name: data[i].title, objnumber: data[i].objectnumber};
@@ -96,10 +117,20 @@ props: {
       },
      fetchObjects(objectNum){
           this.$emit("selected", objectNum)
-      }
+      },
+      nextPage(){
+          if(this.$props.next)
+          {
+              this.$props.pageNumber = Number(this.$props.pageNumber) + 1;
+              this.$methods.getAllGalleries();
+              this.refresh = 1;
+          }
+      },
   },
   data: () => ({
     galleries: [],
+    next: true,
+    refresh: 0
   }),
 };
 </script>

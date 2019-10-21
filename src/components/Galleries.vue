@@ -18,12 +18,21 @@
           Please select a gallery to explore!
         </h1>
       </v-flex>
+      
 
       <v-flex
         mb-5
         xs12
       >
         <h2 class="headline font-weight-bold mb-3">Please Select a Gallery to Continue: </h2>
+        <p class="subheading font-weight-regular">
+          This class fetches 100 results at a time, if there are more than 100 results, a next page button will appear below!
+        </p>
+        <p class="subheading font-weight-regular">
+          If there are no results, this page will remain empty! Try Again :D
+        </p>
+        <v-layout justify-center>
+      </v-layout>
         <!-- Inspo for this: https://codepen.io/pen/?&editable=true&editors=101 -->
         <v-layout justify-center>
         <v-item-group>
