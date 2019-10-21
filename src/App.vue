@@ -1,28 +1,87 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <v-app>
+    <v-app-bar app>
+      <v-toolbar-title class="headline text-uppercase">
+        <span>Ileana</span>
+        <span class="font-weight-light">You have visitied this many times</span>
+      </v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-btn v-on:click="getSearch">
+        <span class="mr-2">Search</span>
+      </v-btn>
+      <v-btn v-on:click="getGalleries">
+        <span class="mr-2">Galleries</span>
+      </v-btn>
+    </v-app-bar>
+
+    <v-content v-if="welcomePage">
+      <HelloWorld/>
+    </v-content>
+    <v-content v-else-if="showGalleries">
+      <Galleries v-on:selected="getObjects"/>
+    </v-content>
+    <v-content v-else-if="showSearch">
+      <HelloWorld/>
+    </v-content>
+    <v-content v-else-if="selectOption">
+      <Objects v-bind:selectName="selectOption" v-on:selected="displayObject"/>
+    </v-content>
+    <v-content v-else-if="objectJson">
+      <Object v-bind:objnumber="objectJson"/>
+    </v-content>
+  </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Galleries from './components/Galleries';
+import HelloWorld from './components/HelloWorld';
+import Objects from './components/Objects';
+import Object from './components/Object';
 
 export default {
-  name: 'app',
+  name: 'App',
   components: {
-    HelloWorld
-  }
-}
+    Galleries,
+    HelloWorld,
+    Objects,
+    Object
+  },
+  methods: {
+    getGalleries(){
+      this.showGalleries = true,
+      this.showSearch = false,
+      this.welcomePage = false,
+      this.selectOption = null,
+      this.objectJson = null
+    },
+    getSearch(){
+      this.showGalleries = false,
+      this.showSearch = true,
+      this.welcomePage = false,
+      this.selectOption = null,
+      this.objectJson = null
+    },
+    getObjects(galName){
+      this.showGalleries = false,
+      this.showSearch = false,
+      this.welcomePage = false,
+      this.selectOption = galName,
+      this.objectJson = null
+    },
+    displayObject(objJson){
+      this.showGalleries = false,
+      this.showSearch = false,
+      this.welcomePage = false,
+      this.selectOption = null,
+      this.objectJson = objJson
+    }
+  },
+  data (){ return {
+    showGalleries: false,
+    showSearch: false,
+    welcomePage: true,
+    selectOption: null,
+    objectJson: null,
+  }},
+};
 </script>
-
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
