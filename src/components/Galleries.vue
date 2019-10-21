@@ -88,7 +88,15 @@ export default {
   },
   methods: {
       async getAllGalleries(){
-          let gal = await fetch('https://api.harvardartmuseums.org/gallery?apikey=3a942490-d002-11e9-9498-734205a7ab16&size=100');
+          let url = '/vue/API?api=gallery&size=100'
+          let gal = await fetch(url,{
+            headers: {
+                'credentials': 'include',
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
+          }
+          );
           let json = await gal.json();
           let data = json.records;
           for(let i in data)

@@ -96,9 +96,22 @@ props: {
 },
   methods: {
       async getAllGalleries(){
-          let link = 'https://api.harvardartmuseums.org/object?apikey=3a942490-d002-11e9-9498-734205a7ab16&size=100&gallery=' + this.$props.selectName
-          + "&page=" + this.$props.pageNumber;
-          let gal = await fetch(link);
+          this.currentUrl = null;
+          let str = this.$props.selectName + "";
+          let url = '/vue/API?api=object&size=100&gallery=' + this.$props.selectName + "&page=" + this.$props.pageNumber;
+          if(str.includes('/vue'))
+          {
+              url = this.$props.selectName + "&page=" + this.$props.pageNumber;
+              this.currentUrl = url;
+          }
+          let gal = await fetch(url,{
+            headers: {
+                'credentials': 'include',
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
+          }
+          );
           let json = await gal.json();
           let data = json.records;
           if(json.info && json.info.next){
@@ -111,12 +124,47 @@ props: {
           this.galleries = [];
           for(let i in data)
           {
-              let pair = {name: data[i].title, objnumber: data[i].objectnumber};
+              let objNum = data[i].objectnumber;
+              let objName = data[i].title;
+              if(this.currentUrl)
+              {
+                  if(this.currentUrl.includes('exhibition'))
+                  {
+                      objNum = data[i].exhibitionid;
+                  }
+                  if(this.currentUrl.includes('place'))
+                  {
+                      objNum = data[i].placeid;
+                      objName = data[i].name;
+                  }
+                  if(this.currentUrl.includes('group'))
+                  {
+                      objNum = data[i].groupid;
+                      objName = data[i].name;
+                  }
+              }
+              let pair = {name: objName, objnumber: objNum};
               this.galleries.push(pair);
           }
       },
      fetchObjects(objectNum){
-          this.$emit("selected", objectNum)
+         let returner = objectNum;
+         if(this.currentUrl)
+         {
+             if(this.currentUrl.includes('exhibition'))
+                {
+                    returner = this.currentUrl + "&exhibitionid=" + objectNum;
+                }
+            if(this.currentUrl.includes('place'))
+                {
+                    returner = this.currentUrl + "&placeid=" + objectNum;
+                }
+            if(this.currentUrl.includes('group'))
+                {
+                    returner = this.currentUrl + "&groupid=" + objectNum;
+                }
+         }
+         this.$emit("selected", returner)
       },
       nextPage(){
           if(this.$props.next)
@@ -130,7 +178,8 @@ props: {
   data: () => ({
     galleries: [],
     next: true,
-    refresh: 0
+    refresh: 0,
+    currentUrl: null,
   }),
 };
 </script>

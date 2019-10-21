@@ -24,7 +24,7 @@
       <Galleries v-on:selected="getObjects"/>
     </v-content>
     <v-content v-else-if="showSearch">
-      <HelloWorld/>
+      <Search v-on:selected="getObjects"/>
     </v-content>
     <v-content v-else-if="selectOption">
       <Objects v-bind:selectName="selectOption" v-bind:pageNumber="1" v-on:selected="displayObject"/>
@@ -44,6 +44,7 @@ import HelloWorld from './components/HelloWorld';
 import Objects from './components/Objects';
 import Object from './components/Object';
 import ToDos from './components/ToDo';
+import Search from './components/Search';
 
 export default {
   name: 'App',
@@ -52,7 +53,8 @@ export default {
     HelloWorld,
     Objects,
     Object,
-    ToDos
+    ToDos,
+    Search
   },
   props: {
     numberVisits: Number

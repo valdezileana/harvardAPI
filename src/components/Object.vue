@@ -27,7 +27,7 @@
 >
         <!-- Inspo for this: https://vuetifyjs.com/en/components/simple-tables -->
 <v-layout justify-center>
-    <v-simple-table dark>
+    <v-simple-table v-if="object" dark>
       <template v-slot:default>
         <thead>
           <tr>
@@ -63,6 +63,110 @@
         </tbody>
       </template>
     </v-simple-table>
+
+<v-simple-table v-else-if="exhibit" dark>
+      <template v-slot:default>
+        <thead>
+          <tr>
+            <th class="text-left">Attribute Name</th>
+            <th class="text-left">Attribute Contents</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Has Image</td>
+            <td>{{ hasimage }}</td>
+          </tr>
+          <tr>
+            <td>Venue</td>
+            <td>{{ venue }}</td>
+          </tr>
+          <tr>
+            <td>Status</td>
+            <td>{{ status }}</td>
+          </tr>
+          <tr>
+            <td>Before</td>
+            <td>{{ before }}</td>
+          </tr>
+          <tr>
+            <td>After</td>
+            <td>{{ after }}</td>
+          </tr>
+        </tbody>
+      </template>
+    </v-simple-table>
+
+
+
+    <v-simple-table v-else-if="placeSearch" dark>
+      <template v-slot:default>
+        <thead>
+          <tr>
+            <th class="text-left">Attribute Name</th>
+            <th class="text-left">Attribute Contents</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Size</td>
+            <td>{{ placeSize }}</td>
+          </tr>
+          <tr>
+            <td>Page</td>
+            <td>{{ placePage }}</td>
+          </tr>
+          <tr>
+            <td>Used By</td>
+            <td>{{ placeUsed }}</td>
+          </tr>
+          <tr>
+            <td>Level</td>
+            <td>{{ placeLevel }}</td>
+          </tr>
+          <tr>
+            <td>Parent</td>
+            <td>{{ placeLevel }}</td>
+          </tr>
+        </tbody>
+      </template>
+    </v-simple-table>
+
+    <v-simple-table v-else-if="groupSearch" dark>
+      <template v-slot:default>
+        <thead>
+          <tr>
+            <th class="text-left">Attribute Name</th>
+            <th class="text-left">Attribute Contents</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Size</td>
+            <td>{{ groupSize }}</td>
+          </tr>
+          <tr>
+            <td>Page</td>
+            <td>{{ groupPage }}</td>
+          </tr>
+          <tr>
+            <td>Used By</td>
+            <td>{{ groupUsed }}</td>
+          </tr>
+          <tr>
+            <td>Level</td>
+            <td>{{ groupLevel }}</td>
+          </tr>
+          <tr>
+            <td>Parent</td>
+            <td>{{ groupLevel }}</td>
+          </tr>
+        </tbody>
+      </template>
+    </v-simple-table>
+
+
+
     </v-layout>
     </v-flex>
     
@@ -128,11 +232,37 @@ props: {
 },
   methods: {
       async getAllGalleries(){
-          let link = 'https://api.harvardartmuseums.org/object?apikey=3a942490-d002-11e9-9498-734205a7ab16&size=100&objectnumber=' + this.$props.objnumber;
+          let link = '/vue/API?api=object&size=100&objectnumber=' + this.$props.objnumber;
+          if(this.$props.objnumber.includes('/vue'))
+          {
+              link = this.$props.objnumber;
+              if(this.$props.objnumber.includes('exhibition'))
+              {
+                  this.object = false;
+                  this.exhibit = true;
+                  this.placeSearch = false;
+                  this.groupSearch = false;
+              }
+              else if(this.$props.objnumber.includes('place'))
+              {
+                  this.object = false;
+                  this.exhibit = false;
+                  this.placeSearch = true;
+                  this.groupSearch = false;
+              }
+              else if(this.$props.objnumber.includes('group'))
+              {
+                  this.object = false;
+                  this.exhibit = false;
+                  this.placeSearch = false;
+                  this.groupSearch = true;
+              }
+          }
           let gal = await fetch(link);
           let json = await gal.json();
           let data = json.records;
           let object = data[0];
+          if(this.object){
           let images = object.images;
             this.name = object.title;
             this.objectNumber = object.objectNumber;
@@ -145,19 +275,81 @@ props: {
               let url = images[i].iiifbaseuri + "/full/full/0/native.jpg";
               this.images.push(url);
           }
+          }
+          else if(this.exhibit)
+          {
+              let images = object.images;
+              this.hasimage = object.hasimage;
+              this.venue = object.venue;
+              this.status = object.status;
+              this.before = object.before;
+              this.after = object.after;
+               for(let i in images)
+                {
+              let url = images[i].iiifbaseuri + "/full/full/0/native.jpg";
+              this.images.push(url);
+                }
+          }
+          else if(this.placeSearch)
+          {
+              let images = object.images;
+              this.placeSize = object.size;
+              this.placePage = object.page;
+              this.placeUsed = object.usedby;
+              this.placeLevel = object.level;
+              this.placeParent = object.parent;
+               for(let i in images)
+                {
+              let url = images[i].iiifbaseuri + "/full/full/0/native.jpg";
+              this.images.push(url);
+                }
+          }
+          else if(this.groupSearch)
+          {
+              let images = object.images;
+              this.groupSize = object.size;
+              this.groupPage = object.page;
+              this.groupUsed = object.usedby;
+              this.groupLevel = object.level;
+              this.groupParent = object.parent;
+               for(let i in images)
+                {
+              let url = images[i].iiifbaseuri + "/full/full/0/native.jpg";
+              this.images.push(url);
+                }
+          }
       },
       openImage(img) { 
           window.open(img, "_blank");    
       }
   },
   data: () => ({
+    object: true,
+    exhibit: false,
+    placeSearch: false,
+    groupSearch: false,
     name: "",
     objectNumber: "",
     images: [],
     place: "",
     person: "",
     period: "",
-    yearmade: ""
+    yearmade: "",
+    hasimage: "",
+    venue: "",
+    status: "",
+    before: "",
+    after: "",
+    placeSize: "",
+    placePage: "",
+    placeUsed: "",
+    placeLevel: "",
+    placeParent: "",
+    groupSize: "",
+    groupPage: "",
+    groupUsed: "",
+    groupLevel: "",
+    groupParent: "",
   }),
 };
 </script>
